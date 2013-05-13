@@ -23,6 +23,7 @@ module TmuxConnector
 
         @merged_groups = {}
         merge_rules.each do |k, v|
+          raise "group '#{ k }' not found" if groups[k].nil?
           @merged_groups[v] ||= []
           @merged_groups[v].concat groups[k]
         end

@@ -46,6 +46,8 @@ HERE
       process_command args
     rescue Docopt::Exit => e
       puts e.message
+    rescue => e
+      puts "Something went wrong: #{ e.message }"
     end
   end
 end
