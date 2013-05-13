@@ -1,4 +1,15 @@
 module TmuxConnector
+  def self.delete_tmux_session(name)
+    system "tmux kill-session -t #{ name } &> /dev/null"
+  end
+
+  def self.delete_all_tmux_sessions()
+    sessions_list = %x( tmux list-sessions &> /dev/null)
+    sessions = sessions_list.scan(/^([^:]+): /).map(&:first)
+    sessions.each { |e| delete_tmux_session e }
+  end
+
+
   class TmuxSession
     attr_reader :name
     attr_reader :session

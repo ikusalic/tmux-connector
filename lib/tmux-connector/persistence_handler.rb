@@ -39,6 +39,10 @@ module TmuxConnector
     FileUtils.touch MAIN_FILE unless File.exists? MAIN_FILE
   end
 
+  def self.delete_all()
+    FileUtils.rm_rf BASE_DIR
+  end
+
   def self.update_main_file(session_name, created, file, purpose)
     data = list_sessions
 

@@ -15,7 +15,7 @@ Usage:
   tcon start <config-file> [--ssh-config=<file>]
              [--session-name=<name>] [--purpose=<description>]
   tcon resume <session-name>
-  tcon delete <session-name>
+  tcon delete (<session-name> | --all)
   tcon list
   tcon send <session-name> (<command> | --command-file=<file>)
             [--server-filter=<regex>] [--group-filter=<regex>]
@@ -30,6 +30,7 @@ Options:
   -s --ssh-config=file       Path to ssh config file [default: ~/.ssh/config].
   -n --session-name=name     Name of the session to be used in the tcon command.
   -p --purpose=description   Description of session's purpose.
+  --all                      Delete all existing sessions.
   -f --server-filter=regex   Filter to select a subset of the servers.
                              Should be valid ruby regex.
   -g --group-filter=regex    Filter to select a subset of the servers via
