@@ -1,10 +1,13 @@
 module TmuxConnector
   class Layout
+    attr_reader :groups
+    attr_reader :merge_rules
     attr_reader :merged_groups
+    attr_reader :raw_config
     attr_reader :windows
 
     def initialize(config, groups, merge_rules)
-      @config = config
+      @raw_config = config
       @groups = groups
       @merge_rules = merge_rules
 
@@ -19,9 +22,9 @@ module TmuxConnector
         config = process_layout_config
 
         @merged_groups = {}
-        @merge_rules.each do |k, v|
+        merge_rules.each do |k, v|
           @merged_groups[v] ||= []
-          @merged_groups[v].concat @groups[k]
+          @merged_groups[v].concat groups[k]
         end
 
         merged_groups.each do |name, hosts|
@@ -30,9 +33,7 @@ module TmuxConnector
       end
 
       def process_layout_config()
-        config = { 'default' => @config['default'] }
-        @config['group-layouts'].each { |k, v| config[k] = v }
-        return config
+        { 'default' => raw_config['default'] }.merge raw_config['group-layouts']
       end
 
       def add_group_to_layout(group_name, hosts, config)
@@ -62,7 +63,7 @@ module TmuxConnector
             end
           end
 
-          @windows << window
+          windows << window
         end
       end
   end

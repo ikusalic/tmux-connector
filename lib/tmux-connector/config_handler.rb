@@ -21,6 +21,7 @@ module TmuxConnector
 
   def self.process_config!(config)
     config['regex'] = Regexp.new config['regex']
+    config['reject-regex'] = Regexp.new config['reject-regex'] if config['reject-regex']
     if config['name']
       c = config['name']
       c['regex-ignore-parts'] ||= []

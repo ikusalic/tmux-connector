@@ -70,7 +70,7 @@ HERE
           commands << "tmux select-window -t #{ name }:0"
           if w[:tmux]
             w[:panes].each_with_index do |p, pi|
-              # NOTE size is specified so panes are not to small and cause errors
+              # size is specified so panes are not to small and cause errors
               size = (100.0 * (w[:panes].size - pi - 1) / (w[:panes].size - pi)).round
 
               commands << "tmux split-window -p #{ size } -t #{ name }:#{ wi }" unless pi == 0
