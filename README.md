@@ -15,8 +15,8 @@ Manage multiple servers using SSH and [tmux].
 `tcon start staging_config.yml -n staging -p 'all staging servers'`
 
 - crate a session (name: 'staging', description: 'all staging servers') with
-complex layout structure (multiple windows with (potentially) different pane
-layouts)
+    complex layout structure (multiple windows with (potentially) different pane
+    layouts)
 - connect to all servers
 - attach to tmux session
 
@@ -31,6 +31,10 @@ layouts)
 `tcon send production 'tail -f' -f 'rdb'`
 
 - send `tail -f` command to all database nodes in 'production' session
+
+`tcon resume s#3`
+
+- resume (recreate) 's#3' session, even after computer restart
 
 
 ## CLI description
@@ -139,7 +143,7 @@ Here's a 'real world' configuration file that shows of all the available
 options and could be use with previous ssh config file:
 
 ~~~yaml
-regex: !ruby-regexp '^(\w+).(\w+)-([\w-]+)-(\d+)$'
+regex: !ruby-regexp '^(\w+)\.(\w+)-([\w-]+)-(\d+)$'
 reject-regex: !ruby-regexp '-(nodes|to_ignore)-'
 regex-parts-to:
     group-by: [1]
@@ -168,10 +172,12 @@ layout:
 ~~~
 
 * * *
-__'regex'__ field is the most important field. Manny other field reference to this
-one. This field provides a rule on how to parse host names from ssh config file.
+__'regex'__ field is the most important field. Some other field reference
+this one. It provides a rule on how to parse host names from ssh config file.
 The regex should be a valid ruby regex. (If you're not familiar with ruby
 regexes, consider visiting [rubulator] and playing around.)
+
+All host whose host names fail the regex will be ignored.
 
 For example if ssh config file include the following host definition:
 ~~~
@@ -180,7 +186,7 @@ Host dev.database-staging-1
 
 and the following regex is used:
 ~~~
-regex: !ruby-regexp '^(\w+).(\w+)-([\w-]+)-(\d+)$'
+regex: !ruby-regexp '^(\w+)\.(\w+)-([\w-]+)-(\d+)$'
 ~~~
 
 the name 'dev.database-staging-1' will be broken to 4 groups:
@@ -195,26 +201,27 @@ groups extracted from host names. Those groups are used to crate meaningful
 layouts. I know, sounds more complex than it really is...
 
 * * *
-__'reject-regex'__ (optional) field is used to ignore some hosts while starting a
-session.
+__'reject-regex'__ (optional) field is used to ignore some hosts while starting
+a session.
 
 * * *
-Fields (__'regex-parts-to'__) __'group-by'__ and __'sort-by'__ are referencing before
-mentioned __'regex'__ field. As their names suggest, they decide which servers
-constitute a group (and share layout and potentially commands) and how to sort
+Fields (__'regex-parts-to'__) __'group-by'__ and __'sort-by'__ are referencing
+before mentioned __'regex'__ field. As their names suggest, they decide which
+servers constitute a group (and share layout and potentially commands) and how
+to sort
 serves in a group. Both fields can reference more than one regex group.
 
 In the above example, for 'dev.database-staging-1' host name, a group to which
 the host belongs would be 2nd group, which is: 'database'.
 
 * * *
-(optional) field __'name'__ and it's (optional) subfields __'regex-ignore-parts'__,
-__'separator'__ and __'prefix'__ decide how to name the servers. If those fields are
-omitted, ssh host name is used instead
+(optional) field __'name'__ and it's (optional) subfields
+__'regex-ignore-parts'__, __'separator'__ and __'prefix'__ decide how to name
+the servers. If those fields are omitted, ssh host name is used instead.
 
 Filed __'regex-ignore-parts'__ potentially removes some regex groups from name,
-__'separator'__ is used to separate left-over groups and it's possible to specify
-__'prefix'__ for the name.
+__'separator'__ is used to separate left-over groups and it's possible to
+specify __'prefix'__ for the name.
 
 * * *
 (optional) field __'merge-groups'__ contains groups that should be merged (for
@@ -222,7 +229,7 @@ layout purposes) together. This can be used to group a few servers that are
 unique in type or small in numbers. E.g. grouping different DB servers.
 
 ~~~
-    lbs: ['haproxy', 'nginx']
+lbs: ['haproxy', 'nginx']
 ~~~
 In this example two different kinds of loadbalancers are grouped together.
 
@@ -237,16 +244,33 @@ There are 2 main ways to specify a layout for a (merge-)group:
 1. built-in tmux layouts (even-horizontal, even-vertical, main-horizontal,
 main-vertical or tiled)
     - defines a tmux layout and (optionally) maximum number of panes in one
-window (default 9).
+        window (default 9).
 2. custom tiled layout
-    -  defines filed layout with maximal size of rows and columns. There is also
-an (optional) option to specify if the panes flow from left to right
-(horizontal - default) or from top to bottom (vertical)
+    -  defines filed layout with maximal size of rows and columns. There is
+        also an (optional) option to specify if the panes flow from left to
+        right (horizontal - default) or from top to bottom (vertical)
 
 The layouts are applied individually to any merge group and to any normal
 (regex) group not belonging to some merge group. If there are more servers in
 a group then layout allows on a single window, next window for that group is
 added. Servers from different groups never share a window.
+
+
+## Requirements
+To be able to use the gem you should have ruby 1.9+ and tmux installed on a *nix
+(Mac OS X, Linux, ...) machine. (Windows: here be dragons)
+
+Interaction with tmux is done via bash commands.
+
+Minimal familiarity with tmux is required.
+For a start, switching between panes/windows and attaching/detaching is enough:
+
+* detach session: `<prefix>d`
+* attach session: `tmux attach -t <session-name>`
+* navigate windows (next/previous): `<prefix>n` & `<prefix>p`
+* navigate panes: `<prefix><arrow>`
+
+(prefix is by default `C-b`)
 
 
 ## Installation
@@ -260,14 +284,12 @@ $ gem install tmux-connector
 ~~~
 
 
-## Requirements
-To be able to use the gem you should have ruby 1.9+ and tmux installed on a *nix machine
-(Windows: here be dragons).
+#### Installing tmux
 
-Interaction with tmux is done via bash commands.
-
-Minimal familiarity with tmux is required.
-For start switching between panes/windows and attaching/detaching is enough.
+If tmux isn't already installed, install it using your favorite mathod,
+e.g.:
+* Linux: `apt-get install tmux`
+* Mac OS X: `brew install tmux`
 
 
 ## Tips
