@@ -4,7 +4,7 @@ module TmuxConnector
   end
 
   def self.delete_all_tmux_sessions()
-    sessions_list = %x( tmux list-sessions &> /dev/null)
+    sessions_list = %x( tmux list-sessions &> /dev/null )
     sessions = sessions_list.scan(/^([^:]+): /).map(&:first)
     sessions.each { |e| delete_tmux_session e }
   end

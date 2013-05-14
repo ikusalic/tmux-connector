@@ -20,7 +20,7 @@ module TmuxConnector
   end
 
   def self.load_session(session_name)
-    data = ( YAML.load_file(MAIN_FILE) rescue {} )
+    data = list_sessions
     raise "session not found: '#{ session_name }'" if data[session_name].nil?
 
     file = data[session_name]['file']
@@ -70,7 +70,7 @@ module TmuxConnector
 
   def self.list_sessions()
     raise "session file (#{ MAIN_FILE }) not found" unless File.exist? MAIN_FILE
-    return ( YAML.load_file(MAIN_FILE) rescue {} )
+    return ( YAML.load_file(MAIN_FILE) rescue {} ) || {}
   end
 
   def self.get_new_session_name(args)
