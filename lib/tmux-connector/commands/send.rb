@@ -9,9 +9,11 @@ module TmuxConnector
     attr_reader :name
     attr_reader :server_filter
     attr_reader :session
+    attr_reader :verbose
 
     def initialize(args)
       @name = args['<session-name>']
+      @verbose = args['--verbose']
 
       load_commands args
 
@@ -22,7 +24,7 @@ module TmuxConnector
     end
 
     def run()
-      session.tmux_session.send_commands(commands, server_filter, group_filter)
+      session.tmux_session.send_commands(commands, server_filter, group_filter, verbose)
     end
 
   private

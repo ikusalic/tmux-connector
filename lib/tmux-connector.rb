@@ -18,7 +18,7 @@ Usage:
   tcon delete (<session-name> | --all)
   tcon list
   tcon send <session-name> (<command> | --command-file=<file>)
-            [--server-filter=<regex>] [--group-filter=<regex>]
+            [--server-filter=<regex>] [--group-filter=<regex>] [--verbose]
   tcon --help
   tcon --version
 
@@ -37,6 +37,8 @@ Options:
                              group membership.  Should be valid ruby regex.
   -c --command-file=file     File containing the list of commands to be
                              executed on remote server[s].
+  -v --verbose               Report how many servers were affected by the send
+                             command.
   -h --help                  Show this screen.
   --version                  Show version.
 HERE

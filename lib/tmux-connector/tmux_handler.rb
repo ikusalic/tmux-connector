@@ -35,7 +35,7 @@ module TmuxConnector
       execute
     end
 
-    def send_commands(send_commands, server_regex, group_regex)
+    def send_commands(send_commands, server_regex, group_regex, verbose)
       count = 0
       each_pane do |window_index, pane_index, host|
         if( (server_regex.nil? || host.ssh_name.match(server_regex)) &&
@@ -46,7 +46,7 @@ module TmuxConnector
         end
       end
 
-      puts "command sent to #{ count } server[s]"
+      puts "command sent to #{ count } server[s]" if verbose
     end
 
   private
