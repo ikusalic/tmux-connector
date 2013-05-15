@@ -68,8 +68,10 @@ module TmuxConnector
 
   end
 
-  def self.list_sessions()
-    raise "session file (#{ MAIN_FILE }) not found" unless File.exist? MAIN_FILE
+  def self.list_sessions(options={})
+    unless options[:suppress_error]
+      raise "session file (#{ MAIN_FILE }) not found" unless File.exist? MAIN_FILE
+    end
     return ( YAML.load_file(MAIN_FILE) rescue {} ) || {}
   end
 
