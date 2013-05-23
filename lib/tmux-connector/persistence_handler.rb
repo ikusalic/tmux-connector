@@ -65,7 +65,6 @@ module TmuxConnector
     data.delete session_name
     open(MAIN_FILE, 'w') { |f| f.write data.to_yaml }
     File.delete(file) rescue nil
-
   end
 
   def self.list_sessions(options={})
