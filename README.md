@@ -28,9 +28,16 @@ Manage multiple servers using SSH and [tmux].
 
 - send `top` command to all loadbalancing nodes in 'staging' session
 
-`tcon send production 'tail -f' -f 'rdb'`
+`tcon send production 'tail -f /var/log/syslog' -f 'rdb'`
 
-- send `tail -f` command to all database nodes in 'production' session
+- send `tail -f /var/log/syslog` command to all database nodes in 'production'
+    session
+
+`tcon send production -f 'rdb' 'C-c'`
+
+- send `Ctrl-C` to all database nodes in 'production' session (if executed
+    after the `tail -f /var/log/syslog` command, it will exit the `tail -f`
+    command
 
 `tcon resume s#3`
 
