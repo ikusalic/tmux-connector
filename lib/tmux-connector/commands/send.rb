@@ -20,6 +20,9 @@ module TmuxConnector
       @server_filter = Regexp.new(args['--server-filter']) rescue nil
       @group_filter = Regexp.new(args['--group-filter']) rescue nil
 
+      @server_filter ||= Regexp.new(args['--filter']) rescue nil
+      @group_filter ||= Regexp.new(args['--filter']) rescue nil
+
       @session = Session.load_by_name args['<session-name>']
     end
 

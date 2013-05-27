@@ -39,9 +39,11 @@ module TmuxConnector
     def send_commands(send_commands, server_regex, group_regex, verbose)
       count = 0
       each_pane do |window_index, pane_index, host|
-        if( (server_regex.nil? || host.ssh_name.match(server_regex)) &&
-            (group_regex.nil? || host.group_id.match(group_regex) ||
-              session.merge_rules[host.group_id].match(group_regex)) )
+        matches = server_regex.nil? && group_regex.nil?
+        matches ||= !server_regex.nil? && host.ssh_name.match(server_regex)
+        matches ||= !group_regex.nil? && session.merge_rules[host.group_id].match(group_regex)
+
+        if matches
           system("tmux send-keys -t #{ name }:#{ window_index }.#{ pane_index } '#{ send_commands }' C-m")
           count += 1
         end
