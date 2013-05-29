@@ -7,10 +7,10 @@ Gem::Specification.new do |gem|
   gem.name          = "tmux-connector"
   gem.version       = TmuxConnector::VERSION
   gem.authors       = ["Ivan Kusalic"]
-  gem.email         = ["ikusalic@gmail.com"]  # TODO
+  gem.email         = ["ivan@ikusalic.com"]
   gem.summary       = %q{Manage multiple servers using SSH and tmux.}
   gem.description   = %q{tcon enables establishing connections (ssh) to multiple servers and executing commands on those servers. The sessions can be persisted (actually recreated) even after computer restarts. Complex sessions with different layouts for different kinds of servers can be easily created.} 
-  gem.homepage      = "http://github.com/ikusalic"  # TODO
+  gem.homepage      = "http://www.ikusalic.com"
 
   gem.add_dependency('docopt')
 
