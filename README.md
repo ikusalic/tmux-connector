@@ -99,7 +99,7 @@ that hard and here I provide exhaustive details about configuration files.
 
 (If there is enough interest, in future versions there could be a special
 command to simplify generation of configuration files. To accelerate the
-process, open an issue or drop me an email: << username >>@gmail.com)
+process, open an issue or drop me an email: ivan@<< username >>.com)
 
 Let's get to it.
 
@@ -351,7 +351,7 @@ information, check my [dotfiles].
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 
-Or just mail me, mail: << username >>@gmail.com
+Or just mail me, mail: ivan@<< username >>.com
 
 This is my first real gem, so all your comments are more than welcome.
 I'd really appreciate ruby code improvements/refactoring comments or usability
@@ -363,7 +363,7 @@ comments (all other are welcome too). Just _drop me a line_. :)
 Take a look at `TODO.md` file (in the repository) for ideas about additional
 features in new versions.
 
-<< username >>@gmail.com
+ivan@<< username >>.com
 
 I'd be happy to hear from you.
 
