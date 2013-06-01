@@ -20,6 +20,8 @@ module TmuxConnector
         ( acc << Host.new(name, config) ) rescue nil
         acc
       end
+      raise "no hosts matching given configuration found, check your configuration file" if hosts.empty?
+
 
       generate_groups
       generate_merge_rules
@@ -45,8 +47,10 @@ module TmuxConnector
 
       def generate_merge_rules()
         @merge_rules = {}
-        config['merge-groups'].each do |name, elements|
-          elements.each { |e| @merge_rules[e] = name }
+        if config['merge-groups']
+          config['merge-groups'].each do |name, elements|
+            elements.each { |e| @merge_rules[e] = name }
+          end
         end
         @groups.keys.each { |e| @merge_rules[e] ||= e }
       end

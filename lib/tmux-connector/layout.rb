@@ -34,7 +34,9 @@ module TmuxConnector
       end
 
       def process_layout_config()
-        { 'default' => raw_config['default'] }.merge raw_config['group-layouts']
+        r = { 'default' => raw_config['default'] }
+        r.merge!(raw_config['group-layouts']) if raw_config['group-layouts']
+        return r
       end
 
       def add_group_to_layout(group_name, hosts, config)
