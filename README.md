@@ -154,7 +154,18 @@ Host dev.node-staging-135
 << ... >>
 ~~~
 
-Here's a 'real world' configuration file that shows of all the available
+Every configuration file needs to define at least the folowing fields:
+__'regex'__, __'regex-parts-to'__, __'group-by'__ and __'sort-by'__
+
+Here's a minimal configuration file that could be used:
+~~~yaml
+regex: !ruby-regexp '^(\w+)\.(\w+)-([\w-]+)-(\d+)$'
+regex-parts-to:
+    group-by: [1]
+    sort-by: [3]
+~~~
+
+And here's a 'real world' configuration file that shows of all the available
 options and could be use with previous ssh config file:
 
 ~~~yaml
@@ -179,18 +190,18 @@ layout:
     group-layouts:
          misc:
             tmux:
-                layout: 'tiled'
+                layout: tiled
                 max-panes: 6
          node:
             tmux:
-                layout: 'tiled'
+                layout: tiled
 ~~~
 
 * * *
-__'regex'__ field is the most important field. Some other field reference
-this one. It provides a rule on how to parse host names from ssh config file.
-The regex should be a valid ruby regex. (If you're not familiar with ruby
-regexes, consider visiting [rubulator] and playing around.)
+(required) __'regex'__ field is the most important field. Some other field
+reference this one. It provides a rule on how to parse host names from ssh
+config file.  The regex should be a valid ruby regex. (If you're not familiar
+with ruby regexes, consider visiting [rubulator] and playing around.)
 
 All host whose host names fail the regex will be ignored.
 
@@ -216,18 +227,18 @@ groups extracted from host names. Those groups are used to crate meaningful
 layouts. I know, sounds more complex than it really is...
 
 * * *
-__'reject-regex'__ (optional) field is used to ignore some hosts while starting
-a session.
-
-* * *
-Fields (__'regex-parts-to'__) __'group-by'__ and __'sort-by'__ are referencing
-before mentioned __'regex'__ field. As their names suggest, they decide which
-servers constitute a group (and share layout and potentially commands) and how
-to sort
-serves in a group. Both fields can reference more than one regex group.
+In (required) __'regex-parts-to'__ section, fields __'group-by'__ and
+__'sort-by'__  are referencing before mentioned __'regex'__ field. As their
+names suggest, they decide which servers constitute a group (and share layout
+and potentially commands) and how to sort serves in a group. Both fields can
+reference more than one regex group.
 
 In the above example, for 'dev.database-staging-1' host name, a group to which
 the host belongs would be 2nd group, which is: 'database'.
+
+* * *
+(optional) __'reject-regex'__ field is used to ignore some hosts while starting
+a session.
 
 * * *
 (optional) field __'name'__ and it's (optional) subfields
@@ -252,24 +263,26 @@ Note that the servers from merge groups can later be referenced with both
 original and merge-group name.
 
 * * *
-Finally, what's left is the layout definition:
+Finally, what's left is the (optional) __layout__ definition:
 
 There are 2 main ways to specify a layout for a (merge-)group:
 
-1. built-in tmux layouts (even-horizontal, even-vertical, main-horizontal,
-main-vertical or tiled)
-    - defines a tmux layout and (optionally) maximum number of panes in one
-        window (default 9).
-2. custom tiled layout
-    -  defines filed layout with maximal size of rows and columns. There is
-        also an (optional) option to specify if the panes flow from left to
-        right (horizontal - default) or from top to bottom (vertical)
+1. with option __tmux__, built-in tmux layouts: even-horizontal, even-vertical,
+   main-horizontal, main-vertical or tiled
+    - defines a tmux layout, option __'layout'__ and (optionally) maximum
+      number of panes in one window, __'max-panes'__, default 9
+2. with option __custom__, custom tiled layout
+    -  defines filed layout with maximal size of rows, __'max-vertical'__, and
+       columns, __'max-vertical'__. There is also an (optional) option
+       __'panes-flow'__ to specify if the panes flow from left to right
+       (horizontal - default) or from top to bottom (vertical)
+
+If you don't specify layout, 'tmux tiled' will be used
 
 The layouts are applied individually to any merge group and to any normal
 (regex) group not belonging to some merge group. If there are more servers in
 a group then layout allows on a single window, next window for that group is
 added. Servers from different groups never share a window.
-
 
 ## Requirements
 To be able to use the gem you should have ruby 1.9+ and tmux installed on a *nix
