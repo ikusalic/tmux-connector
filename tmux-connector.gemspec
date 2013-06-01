@@ -13,6 +13,7 @@ Gem::Specification.new do |gem|
   gem.homepage      = "http://www.ikusalic.com"
 
   gem.add_dependency('docopt')
+  gem.add_development_dependency('rspec')
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
