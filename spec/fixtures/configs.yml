@@ -1,0 +1,115 @@
+minimal:
+  input: &input-min
+    regex: !ruby-regexp '^dev\.(\w+)([\w-]*)-(\d+)$'
+    regex-parts-to:
+      group-by: [0]
+      sort-by: [2]
+  expected: &expected-min
+    regex: !ruby-regexp '^dev\.(\w+)([\w-]*)-(\d+)$'
+    regex-parts-to:
+      group-by: [0]
+      sort-by: [2]
+    layout:
+      default:
+        tmux:
+          layout: tiled
+          max-panes: 9
+
+reject:
+  input:
+    <<: *input-min
+    reject-regex: !ruby-regexp '(loadbalancer|ngx)-'
+  expected:
+    <<: *expected-min
+    reject-regex: !ruby-regexp '(loadbalancer|ngx)-'
+
+name:
+  input:
+    <<: *input-min
+    name:
+      regex-ignore-parts: [1]
+      prefix: 'dev--'
+  expected:
+    <<: *expected-min
+    name:
+      regex-ignore-parts: [1]
+      prefix: 'dev--'
+      separator: '-'
+
+merge:
+  input:
+    <<: *input-min
+    merge-groups:
+      misc: ['repo', 'mongodb', 'sshforwarder']
+      lbs: ['loadbalancer', 'ngx']
+  expected:
+    <<: *expected-min
+    merge-groups:
+      misc: ['repo', 'mongodb', 'sshforwarder']
+      lbs: ['loadbalancer', 'ngx']
+
+layout-default:
+  input:
+    <<: *input-min
+    layout:
+      default:
+        tmux:
+          layout: 'main-vertical'
+  expected:
+    <<: *expected-min
+    layout:
+      default:
+        tmux:
+          layout: 'main-vertical'
+          max-panes: 9
+
+layout-group:
+  input:
+    <<: *input-min
+    layout:
+      group-layouts:
+        lxc:
+          custom:
+            max-horizontal: 3
+            max-vertical: 3
+  expected:
+    <<: *expected-min
+    layout:
+      default:
+        tmux:
+          layout: tiled
+          max-panes: 9
+      group-layouts:
+        lxc:
+          custom:
+            max-horizontal: 3
+            max-vertical: 3
+            panes-flow: horizontal
+
+layout-both:
+  input:
+    <<: *input-min
+    layout:
+      default:
+        tmux:
+          layout: 'main-vertical'
+          max-panes: 4
+      group-layouts:
+        bee:
+          custom:
+            max-horizontal: 2
+            max-vertical: 2
+            panes-flow: vertical
+  expected:
+    <<: *expected-min
+    layout:
+      default:
+        tmux:
+          layout: 'main-vertical'
+          max-panes: 4
+      group-layouts:
+        bee:
+          custom:
+            max-horizontal: 2
+            max-vertical: 2
+            panes-flow: vertical
