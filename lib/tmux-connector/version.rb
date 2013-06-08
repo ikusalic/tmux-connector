@@ -1,3 +1,3 @@
 module TmuxConnector
-  VERSION = "0.0.4"
+  VERSION = "0.8.5"
 end
