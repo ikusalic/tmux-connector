@@ -392,6 +392,8 @@ ivan@<< username >>.com
 
 I'd be happy to hear from you.
 
+Also, visit my [homepage].
+
 
 [docopt]: https://github.com/docopt/docopt
 [tmux]: http://en.wikipedia.org/wiki/Tmux
@@ -400,3 +402,4 @@ I'd be happy to hear from you.
 [dotfiles]: https://github.com/ikusalic/dotfiles
 [YAML]: http://en.wikipedia.org/wiki/YAML
 [rubulator]: http://rubular.com/
+[homepage]: http://www.ikusalic.com/
