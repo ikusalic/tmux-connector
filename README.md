@@ -9,6 +9,8 @@ Manage multiple servers using SSH and [tmux].
     - they are lost only if you delete them explicitly
 * complex layouts customizable for different server groups
 * issuing commands to all servers or just a selected subgroups
+* multiple connections to individual servers
+
 
 ## Quick tease
 
@@ -115,7 +117,7 @@ UserKnownHostsFile=/dev/null
 Host staging.cache-staging-1
   Hostname ec2-111-42-111-42.eu-west-1.compute.amazonaws.com
   Port 4242
-  IdentityFile /Users/ikusalic/.ssh/some-pem-file.pem
+  IdentityFile /Users/some-user/.ssh/some-pem-file.pem
   User ubuntu
 
 Host dev.database-staging-1
@@ -145,12 +147,6 @@ Host dev.node-staging-127
 Host dev.node-staging-129
   << omitted >>
 
-Host dev.node-staging-130
-  << omitted >>
-
-Host dev.node-staging-135
-  << omitted >>
-
 << ... >>
 ~~~
 
@@ -165,7 +161,7 @@ regex-parts-to:
     sort-by: [3]
 ~~~
 
-And here's a 'real world' configuration file that shows of all the available
+And here's a 'real world' configuration file that shows off all the available
 options and could be use with previous ssh config file:
 
 ~~~yaml
@@ -181,6 +177,11 @@ name:
 merge-groups:
     misc: ['cache', 'db', 'mongodb']
     lbs: ['haproxy', 'nginx']
+multiple-hosts:
+    regexes:
+        - !ruby-regexp '(nginx|haproxy)-'
+        - !ruby-regexp '(db)-'
+    counts: [2, 3]
 layout:
     default:
         custom:
@@ -263,6 +264,25 @@ Note that the servers from merge groups can later be referenced with both
 original and merge-group name.
 
 * * *
+(optional) field __'multiple-hosts'__ contains __'regexes'__ and __'counts'__
+fields. With those, some hosts can have multiple connections established, not
+just the default one connection per host.
+
+For example:
+~~~yaml
+multiple-hosts:
+    regexes:
+        - !ruby-regexp '(nginx|haproxy)-'
+        - !ruby-regexp '(db)-'
+    counts: [2, 3]
+~~~
+creates 2 connections for each of nginx or haproxy nodes, as well as 3
+connection for db nodes.
+
+Fields __'regexes'__ and __'counts'__ must have the same number of elements.
+Each element in __'regexes'__ must contain valid ruby regex.
+
+* * *
 Finally, what's left is the (optional) __layout__ definition:
 
 There are 2 main ways to specify a layout for a (merge-)group:
@@ -283,6 +303,7 @@ The layouts are applied individually to any merge group and to any normal
 (regex) group not belonging to some merge group. If there are more servers in
 a group then layout allows on a single window, next window for that group is
 added. Servers from different groups never share a window.
+
 
 ## Requirements
 To be able to use the gem you should have ruby 1.9+ and tmux installed on a *nix

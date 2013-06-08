@@ -46,5 +46,9 @@ describe "Configuration file" do
       it_should_behave_like "config test", 'layout-group'
       it_should_behave_like "config test", 'layout-both'
     end
+
+    describe "multiple hosts" do
+      it_should_behave_like "config test", 'multiple-hosts'
+    end
   end
 end

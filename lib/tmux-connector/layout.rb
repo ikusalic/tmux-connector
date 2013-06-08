@@ -1,4 +1,18 @@
 module TmuxConnector
+  class Pane
+    attr_reader :host
+    attr_reader :name
+    attr_reader :ordinal
+
+    def initialize(host, ordinal)
+      @host = host
+      @ordinal = ordinal
+
+      @name = host.display_name
+      @name += "##{ ordinal }" if ordinal > 1
+    end
+  end
+
   class Layout
     attr_reader :groups
     attr_reader :merge_rules
@@ -46,7 +60,12 @@ module TmuxConnector
           n = config['tmux']['max-panes']
         end
 
-        hosts.each_slice(n).with_index do |arr, i|
+        panes = hosts.reduce([]) do |acc, h|
+          h.count.times { |i| acc << Pane.new(h, i + 1) }
+          acc
+        end
+
+        panes.each_slice(n).with_index do |arr, i|
           window = {
             name: "#{ group_name }##{ i + 1 }",
             group_name: group_name,

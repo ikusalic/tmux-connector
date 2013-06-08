@@ -1,9 +1,10 @@
 module TmuxConnector
   class Host
-    attr_reader :ssh_name
+    attr_reader :count
     attr_reader :display_name
     attr_reader :group_id
     attr_reader :sort_value
+    attr_reader :ssh_name
 
     def initialize(name, config)
       @ssh_name = name
@@ -12,6 +13,8 @@ module TmuxConnector
       @display_name = create_display_name groups, config
       @sort_value = config['regex-parts-to']['sort-by'].map { |i| groups[i] }.join '-'
       @group_id = config['regex-parts-to']['group-by'].map { |i| groups[i] }.join '-'
+
+      @count = get_count config
     end
 
     def to_s()
@@ -20,7 +23,7 @@ module TmuxConnector
 
   private
 
-      def create_display_name groups, config
+      def create_display_name(groups, config)
         if config['name']
           parts = []
           groups.each_with_index do |e, i|
@@ -31,6 +34,17 @@ module TmuxConnector
         end
 
         return @ssh_name
+      end
+
+      def get_count(config)
+        multiple = config['multiple-hosts']
+        return 1 if multiple.nil?
+
+        [ multiple['regexes'], multiple['counts'] ].transpose.each do |re, n|
+          return n if ssh_name.match re
+        end
+
+        return 1
       end
   end
 end

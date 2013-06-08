@@ -38,10 +38,10 @@ module TmuxConnector
 
     def send_commands(send_commands, server_regex, group_regex, verbose)
       count = 0
-      each_pane do |window_index, pane_index, host|
+      each_pane do |window_index, pane_index, pane|
         matches = server_regex.nil? && group_regex.nil?
-        matches ||= !server_regex.nil? && host.ssh_name.match(server_regex)
-        matches ||= !group_regex.nil? && session.merge_rules[host.group_id].match(group_regex)
+        matches ||= !server_regex.nil? && pane.host.ssh_name.match(server_regex)
+        matches ||= !group_regex.nil? && session.merge_rules[pane.host.group_id].match(group_regex)
 
         if matches
           system("tmux send-keys -t #{ name }:#{ window_index }.#{ pane_index } '#{ send_commands }' C-m")
@@ -88,7 +88,7 @@ HERE
               size = (100.0 * (w[:panes].size - pi - 1) / (w[:panes].size - pi)).round
 
               commands << "tmux split-window -p #{ size } -t #{ name }:#{ wi }" unless pi == 0
-              commands << tmux_set_title_cmd(p.display_name, wi, pi)
+              commands << tmux_set_title_cmd(p.name, wi, pi)
             end
 
             commands << "tmux select-layout -t #{ name }:#{ wi } #{ w[:tmux] } &> /dev/null"
@@ -101,7 +101,7 @@ HERE
       end
 
       def clear_panes()
-        each_pane do |window_index, pane_index|
+        each_pane do |window_index, pane_index, _|
           commands << "tmux send-keys -t #{ name }:#{ window_index }.#{ pane_index } clear C-m"
         end
       end
@@ -109,8 +109,8 @@ HERE
       def connect()
         ssh_config_path = File.expand_path session.args['--ssh-config']
 
-        each_pane do |window_index, pane_index, host|
-          ssh_command = "ssh -F #{ ssh_config_path } #{ host.ssh_name }"
+        each_pane do |window_index, pane_index, pane|
+          ssh_command = "ssh -F #{ ssh_config_path } #{ pane.host.ssh_name }"
           commands << "tmux send-keys -t #{ name }:#{ window_index }.#{ pane_index } '#{ ssh_command }' C-m"
         end
       end
@@ -126,14 +126,14 @@ HERE
       def each_pane(&block)
         session.windows.each_with_index do |window, window_index|
           if window[:tmux]
-            window[:panes].each_with_index do |host, pane_index|
-              yield(window_index, pane_index, host)
+            window[:panes].each_with_index do |pane, pane_index|
+              yield(window_index, pane_index, pane)
             end
           else
             pane_index = 0
             window[:panes].each do |g|
-              g.each do |host|
-                yield(window_index, pane_index, host)
+              g.each do |pane|
+                yield(window_index, pane_index, pane)
                 pane_index += 1
               end
             end
@@ -144,25 +144,25 @@ HERE
       def create_custom_layout(window, window_index)
         direction = (window[:flow] == 'horizontal') ? ['-h', '-v'] : ['-v', '-h']
 
-        pane_index = 0
+        in_window_index = 0
         window[:panes].each_with_index do |group, group_index|
-          commands << "tmux select-pane -t #{ name }:#{ window_index }.#{ pane_index }"
+          commands << "tmux select-pane -t #{ name }:#{ window_index }.#{ in_window_index }"
 
-          # create pane in a next row ahead of time so pane indexes match hosts
+          # create tmux-pane in a next row ahead of time so tmux-pane indexes match host-panes
           if group_index < window[:panes].size - 1
             size = (100.0 * (window[:panes].size - group_index - 1) / (window[:panes].size - group_index)).round
             commands << "tmux split-window #{ direction[1] } -p #{ size } -t #{ name }:#{ window_index }"
-            display_name = window[:panes][group_index + 1][0].display_name
-            commands << tmux_set_title_cmd(display_name, window_index, -1)
-            commands << "tmux select-pane -t #{ name }:#{ window_index }.#{ pane_index }"
+            pane_name = window[:panes][group_index + 1][0].name
+            commands << tmux_set_title_cmd(pane_name, window_index, -1)
+            commands << "tmux select-pane -t #{ name }:#{ window_index }.#{ in_window_index }"
           end
 
-          group.each_with_index do |host, host_index|
-            size = (100.0 * (group.size - host_index) / (group.size - host_index + 1)).round
-            commands << "tmux split-window #{ direction[0] } -p #{ size } -t #{ name }:#{ window_index }" unless host_index == 0
-            commands << tmux_set_title_cmd(host.display_name, window_index, pane_index)
+          group.each_with_index do |pane, pane_index|
+            size = (100.0 * (group.size - pane_index) / (group.size - pane_index + 1)).round
+            commands << "tmux split-window #{ direction[0] } -p #{ size } -t #{ name }:#{ window_index }" unless pane_index == 0
+            commands << tmux_set_title_cmd(pane.name, window_index, in_window_index)
 
-            pane_index += 1
+            in_window_index += 1
           end
         end
       end

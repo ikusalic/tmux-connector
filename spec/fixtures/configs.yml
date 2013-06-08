@@ -113,3 +113,19 @@ layout-both:
             max-horizontal: 2
             max-vertical: 2
             panes-flow: vertical
+
+multiple-hosts:
+  input:
+    <<: *input-min
+    multiple-hosts:
+        regexes:
+            - !ruby-regexp '(loadbalancer)-'
+            - !ruby-regexp '(database)-'
+        counts: [2, 3]
+  expected:
+    <<: *expected-min
+    multiple-hosts:
+        regexes:
+            - !ruby-regexp '(loadbalancer)-'
+            - !ruby-regexp '(database)-'
+        counts: [2, 3]
