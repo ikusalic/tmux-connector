@@ -4,12 +4,13 @@ Manage multiple servers using SSH and [tmux].
 
 
 ## Features:
+* connect to multiple servers at once
+* expressive layouts customizable for different server groups available
+* issue commands to all servers or just a selected (custom) subgroup
 * work on multiple sessions in parallel
+* multiple connections to individual servers possible
 * sessions can be persisted (actually recreated) after computer restarts
     - they are lost only if you delete them explicitly
-* complex layouts customizable for different server groups
-* issuing commands to all servers or just a selected subgroups
-* multiple connections to individual servers
 
 
 ## Quick tease
