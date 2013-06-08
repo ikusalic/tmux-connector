@@ -63,8 +63,9 @@ Usage:
   tcon delete (<session-name> | --all)
   tcon list
   tcon send <session-name> (<command> | --command-file=<file>)
-            [--server-filter=<regex>] [--group-filter=<regex>]
-            [--filter=<regex>] [--verbose]
+            [ --server-filter=<regex> | --group-filter=<regex>
+              | --filter=<regex> | --window=<index> ]
+            [--verbose]
   tcon --help
   tcon --version
 
@@ -74,6 +75,7 @@ Options:
   <session-name>             Name that identifies the session. Must be unique.
   <command>                  Command to be executed on remote server[s].
   <regex>                    String that represents valid Ruby regex.
+  <index>                    0-based index.
   -s --ssh-config=file       Path to ssh config file [default: ~/.ssh/config].
   -n --session-name=name     Name of the session to be used in the tcon command.
   -p --purpose=description   Description of session's purpose.
@@ -85,6 +87,7 @@ Options:
   -r --filter=regex          Filter to select a subset of the servers via
                              host names or group membership.
                              Combines --server-filter and --group-filter.
+  -w --window=index          Select a window via (0-based) index.
   -c --command-file=file     File containing the list of commands to be
                              executed on remote server[s].
   -v --verbose               Report how many servers were affected by the send

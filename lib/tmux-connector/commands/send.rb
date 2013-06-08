@@ -10,6 +10,7 @@ module TmuxConnector
     attr_reader :server_filter
     attr_reader :session
     attr_reader :verbose
+    attr_reader :window
 
     def initialize(args)
       @name = args['<session-name>']
@@ -23,11 +24,13 @@ module TmuxConnector
       @server_filter ||= Regexp.new(args['--filter']) rescue nil
       @group_filter ||= Regexp.new(args['--filter']) rescue nil
 
+      @window = args['--window']
+
       @session = Session.load_by_name args['<session-name>']
     end
 
     def run()
-      session.tmux_session.send_commands(commands, server_filter, group_filter, verbose)
+      session.tmux_session.send_commands(commands, server_filter, group_filter, window, verbose)
     end
 
   private
