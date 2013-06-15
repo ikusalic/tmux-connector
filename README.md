@@ -11,7 +11,7 @@ Manage multiple servers using SSH and [tmux].
 * multiple connections to individual servers possible
 * sessions can be persisted (actually recreated) after computer restarts
     - they are lost only if you delete them explicitly
-* panes not associated with hosts
+* panes not associated with hosts available
 
 
 ## Quick tease
@@ -28,11 +28,12 @@ Manage multiple servers using SSH and [tmux].
 
 - send to all servers (in 'staging' session) `sudo su` command
 
-`tcon send staging 'top' -g 'lbs'`
+`tcon send staging -v -g 'lbs' 'top'`
 
-- send `top` command to all loadbalancing nodes in 'staging' session
+- send `top` command to all loadbalancing nodes in 'staging' session and report
+  the number of affected nodes
 
-`tcon send production 'tail -f /var/log/syslog' -f 'worker'`
+`tcon send production -f 'worker' 'tail -f /var/log/syslog'`
 
 - send `tail -f /var/log/syslog` command to all worker nodes in 'production'
     session
@@ -104,6 +105,62 @@ Options:
   --version                  Show version.
 ~~~
 
+### Send command
+
+Send command sends user specified command(s) to chosen panes.
+
+Once more, here's the command syntax:
+~~~
+tcon send <session-name> (<command> | --command-file=<file>)
+          [ --server-filter=<filter> | --group-filter=<regex>
+            | --filter=<regex> | --window=<index> ]
+          [--verbose]
+~~~
+where long flags can be shortened to: `-c`, `-f`, `-g`, `-r`, `-w` and `-v`.
+
+There are 4 flags used to filter the servers (panes) that are going to receive
+the command(s):
+
+* `-f` filters the servers via host names
+    - accept valid ruby regex and optionally intervals specification
+        - syntax: `<ruby-regex>` or `<ruby-regex> :: <intervals-specification>`
+* `-g` filters the servers via group names
+    - accepts valid ruby regex
+* `-r` filters the servers via host names or group names
+    - accepts valid ruby regex
+* `-w` filters the servers that belong to particular layout window
+    - accepts 0-based index
+
+The `-f` filter can accept optional interval specification:
+* interval specification operates on __'sort-by'__ part of host names (defined in
+  configuration file)
+    - intervals specification consists of one or more elements separated
+    by semicollon (the split regex is: `/;\s*/`)
+    - individual element is either an interval description or white-listed element
+    - interval description consists of 4 parts:
+        + '[' or '<' - include or exclude the first element
+        + first element (can be empty)
+        + ',' (can have trailing whitespace)
+        + second element (can be empty)
+        + ']' or '>' - include or exclude the last element
+        - regex used:
+          `/(?<start>[\[<])(?<first>[^,]*),\s*(?<second>[^\]>]*)(?<end>[\]>])/`
+    - examples:
+        + `2; 4` - 2, 4
+        + `[1,3]` - 1, 2, 3
+        + `[1, 3>` - 1, 2
+        + `<1, 3>` - 2
+        + `<,5>`  - ... 3, 4
+        + `[5, >`  - 5, 6, ...
+
+Hopefully now the following examples make more sense:
+
+~~~bash
+tcon send staging 'sudo su'
+tcon send staging -v -g 'lbs' 'top'
+tcon send production -f 'worker' 'tail -f /var/log/syslog'
+tcon send production -f 'worker :: <,3]; 7; <9,13>' 'C-c'
+~~~
 
 ## Configuration
 
