@@ -57,11 +57,11 @@ module TmuxConnector
             elements.each { |e| @merge_rules[e] = name }
           end
         end
-        @groups.keys.each { |e| @merge_rules[e] ||= e }
+        groups.keys.each { |e| @merge_rules[e] ||= e }
       end
 
       def sort_groups!()
-        @groups.each do |k, v|
+        groups.each do |k, v|
           numbers_only = v.all? { |e| e.sort_value =~ /^[-+]?[0-9]+$/ }
           if numbers_only
             v.sort! { |a, b| a.sort_value.to_i <=> b.sort_value.to_i }

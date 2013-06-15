@@ -33,7 +33,7 @@ module TmuxConnector
           return config['name']['prefix'] + parts.join(config['name']['separator'])
         end
 
-        return @ssh_name
+        return ssh_name
       end
 
       def get_count(config)

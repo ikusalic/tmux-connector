@@ -333,6 +333,10 @@ The layouts are applied individually to any merge group and to any normal
 a group then layout allows on a single window, next window for that group is
 added. Servers from different groups never share a window.
 
+* * *
+Take a look at [`spec/fixtures/configs.yml`][configs] for some configuration
+possibilities (sections under 'input' fields).
+
 
 ## Requirements
 To be able to use the gem you should have ruby 1.9+ and tmux installed on a *nix
@@ -347,6 +351,9 @@ For a start, switching between panes/windows and attaching/detaching is enough:
 * attach session: `tmux attach -t <session-name>`
 * navigate windows (next/previous): `<prefix>n` & `<prefix>p`
 * navigate panes: `<prefix><arrow>`
+
+Also useful:
+* toggle pane zoom: `<prefix>z`
 
 (prefix is by default `C-b`)
 
@@ -420,6 +427,7 @@ I'd be happy to hear from you.
 Also, visit my [homepage].
 
 
+[configs]: /spec/fixtures/configs.yml
 [docopt]: https://github.com/docopt/docopt
 [tmux]: http://en.wikipedia.org/wiki/Tmux
 [CLI]: http://en.wikipedia.org/wiki/Command-line_interface

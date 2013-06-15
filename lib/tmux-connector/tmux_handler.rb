@@ -44,6 +44,7 @@ module TmuxConnector
         else
           matches = server_regex.nil? && group_regex.nil?
           matches ||= !server_regex.nil? && pane.host.ssh_name.match(server_regex)
+          matches ||= !group_regex.nil? && pane.host.group_id.match(group_regex)
           matches ||= !group_regex.nil? && session.merge_rules[pane.host.group_id].match(group_regex)
         end
 

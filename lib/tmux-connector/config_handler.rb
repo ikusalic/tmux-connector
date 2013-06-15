@@ -6,7 +6,7 @@ module TmuxConnector
 
   def self.get_config(config_file)
     config = read_config config_file
-    process_config! config
+    process_config!(config) rescue raise 'configuration file parsing failed'
     return config
   end
 
@@ -21,8 +21,7 @@ module TmuxConnector
   def self.process_config!(config)
     config['regex'] = Regexp.new config['regex']
     config['reject-regex'] = Regexp.new(config['reject-regex']) if config['reject-regex']
-    if config['name']
-      c = config['name']
+    if (c = config['name'])
       c['regex-ignore-parts'] ||= []
       c['separator'] ||= '-'
       c['prefix'] ||= ''
