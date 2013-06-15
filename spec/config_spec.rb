@@ -50,5 +50,10 @@ describe "Configuration file" do
     describe "multiple hosts" do
       it_should_behave_like "config test", 'multiple-hosts'
     end
+
+    describe "panes without hosts" do
+      it_should_behave_like "config test", 'hostless'
+      it_should_behave_like "config test", 'hostless-merge'
+    end
   end
 end

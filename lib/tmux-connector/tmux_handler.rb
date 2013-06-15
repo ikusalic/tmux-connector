@@ -114,6 +114,8 @@ HERE
         ssh_config_path = File.expand_path session.args['--ssh-config']
 
         each_pane do |window_index, pane_index, pane|
+          next unless pane.host.instance_of? TmuxConnector::Host
+
           ssh_command = "ssh -F #{ ssh_config_path } #{ pane.host.ssh_name }"
           commands << "tmux send-keys -t #{ name }:#{ window_index }.#{ pane_index } '#{ ssh_command }' C-m"
         end

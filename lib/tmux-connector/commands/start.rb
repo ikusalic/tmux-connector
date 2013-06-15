@@ -42,6 +42,11 @@ module TmuxConnector
           acc[e.group_id] << e
           acc
         end
+
+        if (hostless = config['hostless'])
+          @groups.merge! Hash[hostless.map { |name, count| [ name, [FakeHost.new(name, count)] ] }]
+        end
+
         sort_groups!
       end
 

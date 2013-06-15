@@ -11,6 +11,7 @@ Manage multiple servers using SSH and [tmux].
 * multiple connections to individual servers possible
 * sessions can be persisted (actually recreated) after computer restarts
     - they are lost only if you delete them explicitly
+* panes not associated with hosts
 
 
 ## Quick tease
@@ -178,6 +179,9 @@ name:
     regex-ignore-parts: [0, 2]
     separator: '-'
     prefix: 'dev--'
+hostless:
+    ctrl: 1
+    additional: 2
 merge-groups:
     misc: ['cache', 'db', 'mongodb']
     lbs: ['haproxy', 'nginx']
@@ -255,6 +259,25 @@ __'separator'__ is used to separate left-over groups and it's possible to
 specify __'prefix'__ for the name.
 
 * * *
+(optional) field __'hostless'__ defines groups of panes that are not associated
+with hosts. Each group is defined by the name and the number of panes.
+
+For example,
+~~~yaml
+hostless:
+    ctrl: 1
+    additional: 2
+~~~
+defines 2 groups of panes without hosts. First group, 'ctrl', has only one
+pane, while the second group, 'additional', has 2 panes.
+
+Hostless panes can be used to:
+* issue the tcon commands to other panes
+    - e.g. one control pane, in a separate window
+* manage local work
+* connect to a host at some point in the future
+
+* * *
 (optional) field __'merge-groups'__ contains groups that should be merged (for
 layout purposes) together. This can be used to group a few servers that are
 unique in type or small in numbers. E.g. grouping different DB servers.
@@ -264,8 +287,10 @@ lbs: ['haproxy', 'nginx']
 ~~~
 In this example two different kinds of loadbalancers are grouped together.
 
-Note that the servers from merge groups can later be referenced with both
+Note that the servers/panes from merge groups can later be referenced with both
 original and merge-group name.
+
+Hostless groups can also be merged.
 
 * * *
 (optional) field __'multiple-hosts'__ contains __'regexes'__ and __'counts'__

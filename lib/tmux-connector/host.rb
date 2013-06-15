@@ -47,4 +47,23 @@ module TmuxConnector
         return 1
       end
   end
+
+  class FakeHost
+    attr_reader :count
+    attr_reader :display_name
+    attr_reader :group_id
+    attr_reader :sort_value
+    attr_reader :ssh_name
+
+    def initialize(name, count)
+      @display_name = @group_id = @ssh_name = name
+      @count = count
+
+      @sort_value = nil
+    end
+
+    def to_s()
+      return "<fake-host::#{ display_name }-#{ count }>"
+    end
+  end
 end

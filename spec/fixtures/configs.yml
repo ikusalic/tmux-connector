@@ -129,3 +129,29 @@ multiple-hosts:
             - !ruby-regexp '(loadbalancer)-'
             - !ruby-regexp '(database)-'
         counts: [2, 3]
+
+hostless:
+  input:
+    <<: *input-min
+    hostless:
+        ctrl: 2
+        smt: 4
+  expected:
+    <<: *expected-min
+    hostless:
+        ctrl: 2
+        smt: 4
+
+hostless-merge:
+  input:
+    <<: *input-min
+    hostless:
+        ctrl: 2
+    merge-groups:
+      misc: ['ctrl', 'repo']
+  expected:
+    <<: *expected-min
+    hostless:
+        ctrl: 2
+    merge-groups:
+      misc: ['ctrl', 'repo']
