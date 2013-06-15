@@ -22,7 +22,6 @@ module TmuxConnector
       end
       raise "no hosts matching given configuration found, check your configuration file" if hosts.empty?
 
-
       generate_groups
       generate_merge_rules
 
@@ -47,7 +46,21 @@ module TmuxConnector
           @groups.merge! Hash[hostless.map { |name, count| [ name, [FakeHost.new(name, count)] ] }]
         end
 
-        sort_groups!
+        update_sort_values!
+
+        groups.each do |_, hosts|
+          hosts.sort_by!(&:sort_value)
+        end
+      end
+
+      def update_sort_values!()
+        groups.each do |_, hosts|
+          numbers_only = hosts.all? { |e| e.sort_value =~ /^[-+]?[0-9]+$/ }
+
+          if numbers_only
+            hosts.each { |h| h.sort_value = Integer(h.sort_value, 10) }
+          end
+        end
       end
 
       def generate_merge_rules()
@@ -58,17 +71,6 @@ module TmuxConnector
           end
         end
         groups.keys.each { |e| @merge_rules[e] ||= e }
-      end
-
-      def sort_groups!()
-        groups.each do |k, v|
-          numbers_only = v.all? { |e| e.sort_value =~ /^[-+]?[0-9]+$/ }
-          if numbers_only
-            v.sort! { |a, b| a.sort_value.to_i <=> b.sort_value.to_i }
-          else
-            v.sort_by!(&:sort_value)
-          end
-        end
       end
   end
 end

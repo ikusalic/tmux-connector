@@ -18,7 +18,7 @@ Usage:
   tcon delete (<session-name> | --all)
   tcon list
   tcon send <session-name> (<command> | --command-file=<file>)
-            [ --server-filter=<regex> | --group-filter=<regex>
+            [ --server-filter=<filter> | --group-filter=<regex>
               | --filter=<regex> | --window=<index> ]
             [--verbose]
   tcon --help
@@ -31,11 +31,14 @@ Options:
   <command>                  Command to be executed on remote server[s].
   <regex>                    String that represents valid Ruby regex.
   <index>                    0-based index.
+  <filter>                   Filter consisting of a valid ruby regex and
+                             optionally of a special predicate.
+                             For more information see README file.
   -s --ssh-config=file       Path to ssh config file [default: ~/.ssh/config].
   -n --session-name=name     Name of the session to be used in the tcon command.
   -p --purpose=description   Description of session's purpose.
   --all                      Delete all existing sessions.
-  -f --server-filter=regex   Filter to select a subset of the servers via
+  -f --server-filter=filter  Filter to select a subset of the servers via
                              host names.
   -g --group-filter=regex    Filter to select a subset of the servers via
                              group membership.

@@ -1,9 +1,10 @@
 module TmuxConnector
   class Host
+    attr_accessor :sort_value
+
     attr_reader :count
     attr_reader :display_name
     attr_reader :group_id
-    attr_reader :sort_value
     attr_reader :ssh_name
 
     def initialize(name, config)

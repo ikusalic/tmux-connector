@@ -36,16 +36,31 @@ module TmuxConnector
       execute
     end
 
-    def send_commands(send_commands, server_regex, group_regex, window, verbose)
+    def send_commands(send_commands, server_regex, group_regex, window, opts={})
+      predicate = opts[:filter_predicate]
+
       count = 0
       each_pane do |window_index, pane_index, pane|
         if window
           matches = window == window_index.to_s
         else
           matches = server_regex.nil? && group_regex.nil?
-          matches ||= !server_regex.nil? && pane.host.ssh_name.match(server_regex)
           matches ||= !group_regex.nil? && pane.host.group_id.match(group_regex)
           matches ||= !group_regex.nil? && session.merge_rules[pane.host.group_id].match(group_regex)
+
+          unless server_regex.nil?
+            name_match = pane.host.ssh_name.match(server_regex)
+
+            if predicate
+              begin
+                matches ||= name_match && predicate.call(pane.host.sort_value)
+              rescue
+                raise "error while using send predicate for '#{ pane.host.display_name }'; command already sent to #{ count } servers"
+              end
+            else
+              matches ||= name_match
+            end
+          end
         end
 
         if matches
@@ -54,7 +69,7 @@ module TmuxConnector
         end
       end
 
-      puts "command sent to #{ count } server[s]" if verbose
+      puts "command sent to #{ count } server[s]" if opts[:verbose]
     end
 
   private
@@ -115,7 +130,7 @@ HERE
         ssh_config_path = File.expand_path session.args['--ssh-config']
 
         each_pane do |window_index, pane_index, pane|
-          next unless pane.host.instance_of? TmuxConnector::Host
+          next unless pane.host.instance_of? Host
 
           ssh_command = "ssh -F #{ ssh_config_path } #{ pane.host.ssh_name }"
           commands << "tmux send-keys -t #{ name }:#{ window_index }.#{ pane_index } '#{ ssh_command }' C-m"
