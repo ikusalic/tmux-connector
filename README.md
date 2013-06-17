@@ -3,7 +3,23 @@
 Manage multiple servers using SSH and [tmux].
 
 
-## Features:
+- [Features](#features)
+- [Quick tease](#quick-tease)
+- [CLI description](#cli-description)
+    - [Send command](#send-command)
+- [Configuration](#configuration)
+- [Requirements](#requirements)
+- [Installation](#installation)
+    - [Installing tmux](#installing-tmux)
+- [Tips](#tips)
+    - [SSH config files](#ssh-config-files)
+    - [Tmux configuration](#tmux-configuration)
+- [Contributing](#contributing)
+- [Comments, ideas or if you feel like chatting](#comments-ideas-or-if-you-feel-like-chatting)
+
+
+## Features
+
 * connect to multiple servers at once
 * expressive layouts customizable for different server groups available
 * issue commands to all servers or just a selected (custom) subgroup
