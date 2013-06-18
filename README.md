@@ -496,9 +496,6 @@ comments (all other are welcome too). Just _drop me a line_. :)
 
 ## Comments, ideas or if you feel like chatting
 
-Take a look at `TODO.md` file (in the repository) for ideas about additional
-features in new versions.
-
 ivan@<< username >>.com
 
 I'd be happy to hear from you.
