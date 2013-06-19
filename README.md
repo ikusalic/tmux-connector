@@ -14,6 +14,7 @@ Manage multiple servers using SSH and [tmux].
 - [Tips](#tips)
     - [SSH config files](#ssh-config-files)
     - [Tmux configuration](#tmux-configuration)
+    - [Sending the commands](#sending-the-commands)
 - [Contributing](#contributing)
 - [Comments, ideas or if you feel like chatting](#comments-ideas-or-if-you-feel-like-chatting)
 
@@ -477,6 +478,19 @@ consequences and are sure that it is safe to do so.
 Since gem uses tmux, consider configuring it for your purposes. E.g. I'm a [Vim]
 user, and so configure tmux to use Vim-like bindings to switch panes. For more
 information, check my [dotfiles].
+
+
+### Sending the commands
+
+You need to run the send command from somewhere. There are (at least) 2
+options:
+
+* have a controller pane (or the whole window) inside the tcon session
+    - a pane not connected to a server to issue the commands to other panes
+* have a separate terminal pane for issuing the send commands
+    - I'm a iTerm2 user, and so I split the window vertically: much bigger
+      top pane for the tcon session, and a smaller bottom pane to issue the
+      send commands
 
 
 ## Contributing
