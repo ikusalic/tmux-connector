@@ -2,6 +2,8 @@
 
 Manage multiple servers using SSH and [tmux].
 
+For the demo and short intro, read [this blog post][blog-post].
+
 
 - [Features](#features)
 - [Quick tease](#quick-tease)
@@ -517,6 +519,7 @@ I'd be happy to hear from you.
 Also, visit my [homepage].
 
 
+[blog-post]: http://www.ikusalic.com/blog/2013/06/18/managing-multiple-servers-with-tcon/
 [configs]: /spec/fixtures/configs.yml
 [docopt]: https://github.com/docopt/docopt
 [tmux]: http://en.wikipedia.org/wiki/Tmux
