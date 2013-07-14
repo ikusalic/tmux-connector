@@ -10,6 +10,7 @@ For the demo and short intro, read [this blog post][blog-post].
 - [CLI description](#cli-description)
     - [Send command](#send-command)
 - [Configuration](#configuration)
+- [Sessions without configuration files](#sessions-without-configuration-files)
 - [Requirements](#requirements)
 - [Installation](#installation)
     - [Installing tmux](#installing-tmux)
@@ -70,6 +71,11 @@ For the demo and short intro, read [this blog post][blog-post].
 
 - resume (recreate) 's#3' session, even after computer restart
 
+`tcon start -q "dev.node-staging-[[42,]]"`
+
+- starts quick session (no config file); selects all 'node' servers that have
+  index of at least 42
+
 
 ## CLI description
 
@@ -82,12 +88,13 @@ even after computer restarts. Complex sessions with different layouts for
 different kinds of servers can be easily created.
 
 Usage:
-  tcon start <config-file> [--ssh-config=<file>]
-             [--session-name=<name>] [--purpose=<description>]
+  tcon start ( <config-file> | --quick-session=<qs-args> )
+             [--ssh-config=<file>] [--session-name=<name>]
+             [--purpose=<description>]
   tcon resume <session-name>
   tcon delete (<session-name> | --all)
   tcon list
-  tcon send <session-name> (<command> | --command-file=<file>)
+  tcon send <session-name> ( <command> | --command-file=<file> )
             [ --server-filter=<filter> | --group-filter=<regex>
               | --filter=<regex> | --window=<index> ]
             [--verbose]
@@ -95,34 +102,38 @@ Usage:
   tcon --version
 
 Options:
-  <config-file>              Path to configuration file. Configuration file
-                             describes how new session is started. YAML format.
-  <session-name>             Name that identifies the session. Must be unique.
-  <command>                  Command to be executed on remote server[s].
-  <regex>                    String that represents valid Ruby regex.
-  <index>                    0-based index.
-  <filter>                   Filter consisting of a valid ruby regex and
-                             optionally of a special predicate.
-                             For more information see README file.
-  -s --ssh-config=file       Path to ssh config file [default: ~/.ssh/config].
-  -n --session-name=name     Name of the session to be used in the tcon command.
-  -p --purpose=description   Description of session's purpose.
-  --all                      Delete all existing sessions.
-  -f --server-filter=filter  Filter to select a subset of the servers via
-                             host names.
-  -g --group-filter=regex    Filter to select a subset of the servers via
-                             group membership.
-  -r --filter=regex          Filter to select a subset of the servers via
-                             host names or group membership.
-                             Combines --server-filter and --group-filter.
-  -w --window=index          Select a window via (0-based) index.
-  -c --command-file=file     File containing the list of commands to be
-                             executed on remote server[s].
-  -v --verbose               Report how many servers were affected by the send
-                             command.
-  -h --help                  Show this screen.
-  --version                  Show version.
+  <config-file>                Path to configuration file. Configuration file
+                               describes how new session is started. YAML.
+  <qs-args>                    Arguments needed to start a quick session.
+  <session-name>               Name to identify the session. Must be unique.
+  <command>                    Command to be executed on remote server[s].
+  <regex>                      String that represents valid Ruby regex.
+  <index>                      0-based index.
+  <filter>                     Filter consisting of a valid ruby regex and
+                               optionally of a special predicate.
+                               For more information see README file.
+  -q --quick-session=qs-args   Start the seesion without a configuration file.
+                               Specify necessary argumenst instead.
+  -s --ssh-config=file         Path to ssh config file. [default: ~/.ssh/config]
+  -n --session-name=name       Name of the session.
+  -p --purpose=description     Description of session's purpose.
+  --all                        Delete all existing sessions.
+  -f --server-filter=filter    Filter to select a subset of the servers via
+                               host names.
+  -g --group-filter=regex      Filter to select a subset of the servers via
+                               group membership.
+  -r --filter=regex            Filter to select a subset of the servers via
+                               host names or group membership.
+                               Combines --server-filter and --group-filter.
+  -w --window=index            Select a window via (0-based) index.
+  -c --command-file=file       File containing the list of commands to be
+                               executed on remote server[s].
+  -v --verbose                 Report how many servers were affected by the
+                               send command.
+  -h --help                    Show this screen.
+  --version                    Show version.
 ~~~
+
 
 ### Send command
 
@@ -181,14 +192,10 @@ tcon send production -f 'worker' 'tail -f /var/log/syslog'
 tcon send production -f 'worker :: <,3]; 7; <9,13>' 'C-c'
 ~~~
 
+
 ## Configuration
 
-To use this gem, you need to create a configuration file. This shouldn't be
-that hard and here I provide exhaustive details about configuration files.
-
-(If there is enough interest, in future versions there could be a special
-command to simplify generation of configuration files. To accelerate the
-process, open an issue or drop me an email: ivan@<< username >>.com)
+To use this gem, you usually need to create a configuration file.
 
 Let's get to it.
 
@@ -436,6 +443,43 @@ added. Servers from different groups never share a window.
 * * *
 Take a look at [`spec/fixtures/configs.yml`][configs] for some configuration
 possibilities (sections under 'input' fields).
+
+
+## Sessions without configuration files
+
+As mentioned in previous section, normally you need the configuration file to
+start the session.
+
+This is not true for some smaller sessions where you can directly specify all
+necessary configuration in command line when starting the session.
+
+You can use `--quick-session` (or `-q`) to start a quick session. Quick
+session arguments must conform to the following format:
+~~~
+"<regex>[[<lower-limit>,<upper-limit>]]<additional-arguments>"
+~~~
+where:
+
+* `<regex>` is similar to 'regex' filed in configuration file, but without the
+  sorting part (which is presumably last part of the full regex)
+* `<lower-limit>` and `<upper-limit>` are optional elements and define range of
+  valid servers. Range is enforced on sorting part (which is not part of
+  previous regex, but presumably comes after it)
+* `<optional-additional-arguments>` is list of optional arguments. This list
+  starts with ' :: ' and consists of key-value pairs separated by semicolon.
+  Currently only `h` and `v` arguments are supported. Format:
+  `:: h <max-horizontal-panes>; v <max-vertical-panes>`
+
+Examples:
+
+- `tcon start -q "dev.node-staging-[[1,24]]"`
+- `tcon start -q "dev.node-staging-[[42,]]"`
+- `tcon start -q "dev.node-staging-[[,]]"`
+- `tcon start -q "dev.node-staging-[[,42]] :: h 2; v 2"`
+
+Example with more complex regex (selects 2 kinds of servers):
+
+- `tcon start -q "dev.(nginx|haproxy)-staging-[[10,30]] :: h 2; v 2"`
 
 
 ## Requirements

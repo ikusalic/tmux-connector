@@ -1,4 +1,6 @@
 module TmuxConnector
+  QUICK_GROUP_ID = 'quick_group_id'
+
   class Host
     attr_accessor :sort_value
 
@@ -25,17 +27,19 @@ module TmuxConnector
 
   private
 
-      def check_range!(range)
-        return if range.nil?
+      def check_range!(ranges)
+        return if ranges.nil?
 
-        if range[group_id]
-          a, b = range[group_id].map(&:to_s)
+        range = ranges[group_id] || ranges[TmuxConnector::QUICK_GROUP_ID]
+        if range
+          a, b = range.map(&:to_s)
           x = sort_value
 
-          numbers_only = [a, b, x].all? { |e| e =~ /^[-+]?[0-9]+$/ }
-          a, b, x = [a, b, x].map { |e| Integer(e, 10) } if numbers_only
+          numbers_only = [a, b, x].all? { |e| e =~ /^[-+]?[0-9]*$/ }
+          a, b, x = [a, b, x].map { |e| Integer(e, 10) rescue nil } if numbers_only
 
-          raise if x < a || x > b
+          raise if a && x < a
+          raise if b && x > b
         end
       end
 
