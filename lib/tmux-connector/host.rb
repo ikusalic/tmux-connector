@@ -15,6 +15,7 @@ module TmuxConnector
       @sort_value = config['regex-parts-to']['sort-by'].map { |i| groups[i] }.join '-'
       @group_id = config['regex-parts-to']['group-by'].map { |i| groups[i] }.join '-'
 
+      check_range! config['group-ranges']
       @count = get_count config
     end
 
@@ -23,6 +24,20 @@ module TmuxConnector
     end
 
   private
+
+      def check_range!(range)
+        return if range.nil?
+
+        if range[group_id]
+          a, b = range[group_id].map(&:to_s)
+          x = sort_value
+
+          numbers_only = [a, b, x].all? { |e| e =~ /^[-+]?[0-9]+$/ }
+          a, b, x = [a, b, x].map { |e| Integer(e, 10) } if numbers_only
+
+          raise if x < a || x > b
+        end
+      end
 
       def create_display_name(groups, config)
         if config['name']

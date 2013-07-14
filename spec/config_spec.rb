@@ -55,5 +55,9 @@ describe "Configuration file" do
       it_should_behave_like "config test", 'hostless'
       it_should_behave_like "config test", 'hostless-merge'
     end
+
+    describe "group intervals" do
+      it_should_behave_like "config test", 'group-intervals'
+    end
   end
 end

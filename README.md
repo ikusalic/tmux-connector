@@ -267,6 +267,9 @@ hostless:
 merge-groups:
     misc: ['cache', 'db', 'mongodb']
     lbs: ['haproxy', 'nginx']
+group-ranges:
+    cache: [1, 4]
+    node: [125, 131]
 multiple-hosts:
     regexes:
         - !ruby-regexp '(nginx|haproxy)-'
@@ -302,7 +305,7 @@ Host dev.database-staging-1
 ~~~
 
 and the following regex is used:
-~~~
+~~~yaml
 regex: !ruby-regexp '^(\w+)\.(\w+)-([\w-]+)-(\d+)$'
 ~~~
 
@@ -364,7 +367,7 @@ Hostless panes can be used to:
 layout purposes) together. This can be used to group a few servers that are
 unique in type or small in numbers. E.g. grouping different DB servers.
 
-~~~
+~~~yaml
 lbs: ['haproxy', 'nginx']
 ~~~
 In this example two different kinds of loadbalancers are grouped together.
@@ -373,6 +376,21 @@ Note that the servers/panes from merge groups can later be referenced with both
 original and merge-group name.
 
 Hostless groups can also be merged.
+
+* * *
+(optional) field __'group-ranges'__ contains groups that should be limited to
+specific ranges of servers. Ranges are defined by lower and upper limits, both inclusive.
+They are enforced on sort values (defined by aforementioned 'sort-by' field).
+
+If the following group ranges were defined:
+~~~yaml
+group-ranges:
+    cache: [1, 4]
+    node: [125, 131]
+~~~
+Only cache servers with sort ids 1, 2, 3 or 4 would be included in the session.
+Similarly for node servers, only servers with ids between 125 and 131 would be
+included.
 
 * * *
 (optional) field __'multiple-hosts'__ contains __'regexes'__ and __'counts'__

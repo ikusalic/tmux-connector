@@ -48,6 +48,18 @@ merge:
       misc: ['repo', 'mongodb', 'sshforwarder']
       lbs: ['loadbalancer', 'ngx']
 
+group-intervals:
+  input:
+    <<: *input-min
+    group-intervals:
+      lxc: [199, 243]
+      ngx: [11, 42]
+  expected:
+    <<: *expected-min
+    group-intervals:
+      lxc: [199, 243]
+      ngx: [11, 42]
+
 layout-default:
   input:
     <<: *input-min
